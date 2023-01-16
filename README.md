@@ -18,19 +18,14 @@ public File exportOrg(String syscorpid, String depts, String users, String field
     sql.append(fields.replace(",efield_dept", "").replace("efield_dept,", "").replace("efield_dept", "").replace("efield_name", "u.name as efield_name").replace("efield_weixin", "u.weixin as efield_weixin").replace("efield_wxuserid", "u.wxuserid as efield_wxuserid").replace("efield_post", "u.post as efield_post").replace("efield_mobile", "u.mobile as efield_mobile").replace("efield_email", "u.email as efield_email").replace("efield_tel", "u.tel as efield_tel").replace("efield_jobnumber", "u.jobnumber as efield_jobnumber").replace("efield_status", "case when u.isattend = 1 then '正常' when u.isattend = 2 then '已禁用' else '未知' end as efield_status").replace("efield_relatesys", "group_concat(c.sysname) as efield_relatesys").replace("efield_relateaccount", "group_concat(b.outsysuserid) as efield_relateaccount"));
     ...
     if (!StrKit.notBlank(depts) && fields.indexOf("efield_dept") == -1) {
-       ...
-    } else {
         ...
-        sql.append(" group by t.id order by t.showorder");
-        if (StrKit.notBlank(depts) && StrKit.notBlank(users)) {
-            models = WxCpUserInfoModel.dao.find(sql.toString(), ToolString.mergeAllSqlParams(new Object[]{syscorpid, ToolString.buildSqlInParams(depts.replaceAll("\\|", ",")), ToolString.buildSqlInParams(users.replaceAll("\\|", ","))}));
-        } else if (StrKit.notBlank(depts)) {
-            models = WxCpUserInfoModel.dao.find(sql.toString(), ToolString.mergeAllSqlParams(new Object[]{syscorpid, ToolString.buildSqlInParams(depts.replaceAll("\\|", ","))}));
-        } else if (StrKit.notBlank(users)) {
+        if (StrKit.notBlank(users)) {
             models = WxCpUserInfoModel.dao.find(sql.toString(), ToolString.mergeAllSqlParams(new Object[]{syscorpid, ToolString.buildSqlInParams(users.replaceAll("\\|", ","))}));
         } else {
             models = WxCpUserInfoModel.dao.find(sql.toString(), new Object[]{syscorpid});
         }
+    } else {
+        ...
     }
 
     return ToolPOI.exportFile(fields.split(","), eFieldMap, "纷享销客通讯录", "通讯录", models);
